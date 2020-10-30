@@ -21,5 +21,6 @@ urlpatterns = [
     # path(r'^$', 'bookstore.views.home', name='home'),
     # path('blog/', include('blog.urls')),
     path('', include('store.urls'), name='store'),
+    path ('accounts/', include('registration.backends.default.urls')),
     path('admin/', admin.site.urls),
 ]
