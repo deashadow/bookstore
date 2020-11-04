@@ -12,9 +12,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import logging
+import logging.config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -32,17 +34,26 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+     'django.contrib.admin',
+     'registration',
     'django.contrib.sites',
-    'registration',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
+    'social.apps.django_app.default',
+    'bootstrap4',
+    'bootstrap_themes',
+    'compressor',
+    'social_django',
+    'crispy_forms',
+   # 'debug_toolbar',
     
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -59,7 +70,7 @@ ROOT_URLCONF = 'bookstore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [(os.path.join(BASE_DIR, 'templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,10 +78,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                
             ],
         },
     },
 ]
+
+BOOTSTRAP4 = {
+    'include_jquery': True
+}
 
 WSGI_APPLICATION = 'bookstore.wsgi.application'
 
@@ -81,9 +101,14 @@ WSGI_APPLICATION = 'bookstore.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME':  os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+AUTHENTICATION_BACKENDS = (
+   # 'social.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 
 # Password validation
@@ -123,9 +148,69 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+COMPRESS_ENABLED = True
+STATICFILES_FINDERS = {
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+}
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
+MEDIA_URL = '/media/'
 
 #Registration
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_AUTO_LOGIN = True
 
 SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/store/'  # where to redirect the user upon login 
+
+ 
+
+# Email settings
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+
+EMAIL_HOST_USER = "ronaldrendessy@gmail.com"
+
+EMAIL_HOST_PASSWORD = "Renee2012"
+
+EMAIL_PORT = 587  # you have to use SSL or TLS
+
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = "books@mysterybooks.com"
+
+#Social Auth - Facebook
+SOCIAL_AUTH_FACEBOOK_KEY = '561711150674700'
+SOCIAL_AUTH_FACEBOOK_SECRET = '3fd80821317288c722fafd366cacbc56'
+
+logging.config.dictConfig ( {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'basic': {
+            'format': '%(asctime)s %(name)-20s %(levelname)-8s %(module)s | %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'basic',
+            'maxBytes': 10000,
+            'backupCount': 10,
+            'filename': os.path.join(BASE_DIR, 'mystery_books.log'),
+        },
+    },
+    'loggers': {
+        'store': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
+})

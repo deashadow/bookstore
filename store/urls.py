@@ -17,7 +17,11 @@ from . import views
 from django.urls import path, include
 
 urlpatterns = [
-    path('', views.template, name="template"),
-    path('bstore', views.bstore, name="bstore"),
-   
+    path('', views.store, name='index'),
+   # path('bstore', views.bstore, name="bstore"),
+    path('book/(\d+)', views.book_details, name='book_details'),
+    path('add/(\d+)', views.add_to_cart, name='add_to_cart'),
+    path('remove/(\d+)', views.remove_from_cart, name='remove_from_cart'),
+    path('cart/', views.cart, name='cart'),
+    path('complete_order/', views.complete_order, name='complete_order'),
 ]
